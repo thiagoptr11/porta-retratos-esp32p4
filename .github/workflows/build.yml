@@ -35,7 +35,9 @@ jobs:
         with:
           name: firmware-esp32p4-${{ github.run_number }}
           path: |
-            upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/*.bin
+            upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/lvgl_demo_v9.bin
+            upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/bootloader/bootloader.bin
+            upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/partition_table/partition-table.bin
             upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/flasher_args.json
             upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/flash_args
           if-no-files-found: error
