@@ -18,9 +18,11 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/cheops/JC1060P470C_I_W.git upstream
 
-      - name: Aplicar firmware do porta-retratos
+      - name: Aplicar firmware e dependencias do porta-retratos
         run: |
           cp main/main.c upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/main/main.c
+          cp main/idf_component.yml upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/main/idf_component.yml
+          cp main/CMakeLists.txt upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/main/CMakeLists.txt
 
       - name: Compilar para ESP32-P4
         working-directory: upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9
@@ -29,12 +31,14 @@ jobs:
           . "$IDF_PATH/export.sh"
           idf.py set-target esp32p4
           idf.py build
+          esptool.py --chip esp32p4 merge_bin -o build/porta-retratos-esp32p4.bin --flash_mode qio --flash_freq 80m --flash_size 16MB 0x2000 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000 build/lvgl_demo_v9.bin
 
       - name: Publicar arquivos para gravação
         uses: actions/upload-artifact@v4
         with:
           name: firmware-esp32p4-${{ github.run_number }}
           path: |
+            upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/porta-retratos-esp32p4.bin
             upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/lvgl_demo_v9.bin
             upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/bootloader/bootloader.bin
             upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/partition_table/partition-table.bin
