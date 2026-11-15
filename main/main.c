@@ -132,7 +132,7 @@ static uint8_t *decode_and_fit_jpeg(const char *path, uint16_t *out_w, uint16_t 
         .outbuf_size = 0,
         .out_format = JPEG_IMAGE_FORMAT_RGB565,
         .out_scale = JPEG_IMAGE_SCALE_0,
-        .flags = { .swap_color_bytes = 1 },
+        .flags = { .swap_color_bytes = 0 },
     };
     esp_jpeg_image_output_t info = {0};
     esp_err_t err = esp_jpeg_get_image_info(&cfg, &info);
