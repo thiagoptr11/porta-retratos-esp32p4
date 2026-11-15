@@ -1,0 +1,42 @@
+name: Build firmware ESP32-P4
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:v5.4.2
+    steps:
+      - name: Checkout do porta-retratos
+        uses: actions/checkout@v4
+
+      - name: Baixar projeto de referência da placa
+        run: |
+          git clone --depth 1 https://github.com/cheops/JC1060P470C_I_W.git upstream
+
+      - name: Aplicar firmware do porta-retratos
+        run: |
+          cp main/main.c upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/main/main.c
+
+      - name: Compilar para ESP32-P4
+        working-directory: upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9
+        shell: bash
+        run: |
+          . "$IDF_PATH/export.sh"
+          idf.py set-target esp32p4
+          idf.py build
+
+      - name: Publicar arquivos para gravação
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-esp32p4-${{ github.run_number }}
+          path: |
+            upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/*.bin
+            upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/flasher_args.json
+            upstream/1-Demo/Demo_IDF/examples/lvgl_demo_v9/build/flash_args
+          if-no-files-found: error
+          retention-days: 30
